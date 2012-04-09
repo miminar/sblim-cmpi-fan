@@ -1,0 +1,112 @@
+//
+// Linux_Fan.mof
+//
+
+#pragma locale ("en_US")
+//#pragma namespace ("root/cimv2")
+
+// ===================================================================
+// 	Linux_Fan
+// ===================================================================
+
+[ Provider("cmpi:cmpiLinux_FanProvider") ]
+class Linux_Fan : CIM_Fan {
+
+     [ Key, Override("DeviceID"),
+       Description("Uniquely identifies fan. It is a composition of
+       SysPath and Name glued with slash ('/').") ]
+     string DeviceId;
+
+     [ Key, Override("Name"),
+       Description("Name of fan provided by system.") ]
+    string Name;
+
+     [ Description("Array of fan features, that are exposed through system
+     interface. In other words: those that are readible/writable."),
+       ValueMap { "1", "2", "3", "4", "5", "6", "7", "8" },
+       Values { "MinSpeed", "MaxSpeed", "Divisor", "Pulses", "Beep", 
+	"Alarm", "MinAlarm", "MaxAlarm" }
+     ]
+    uint16 AccessibleFeatures[];
+
+     [ Description("Minimum speed value."),
+       Write,
+       Units("Revolutions per Minute") ]
+    uint64 MinSpeed;
+
+     [ Description("Maximum speed value."),
+       Write,
+       Units("Revolutions per Minute") ]
+    uint64 MaxSpeed;
+
+     [ Description("Fan divisisor. It affects Minimum and Maximum speed value
+     and accuracy of readings. 
+     The drivers account for the 'fan divisor' in their calculation
+     of RPM. So changing the fan divisor will NOT change the
+     nominal RPM reading, it will only affect the minimum and maximum
+     readings and the accuracy of the readings.
+     The actual formula is RPM = (60 * 22500) / (count * divisor)"),
+       Write ]
+    uint32 Divisor;
+
+    [ Description("Number of tachometer pulses per fan revolution.
+      Integer value, typically between 1 and 4.
+      This value is a characteristic of the fan connected to the
+      device's input, so it has to be set in accordance with the fan
+      model."),
+      Write ]
+    uint32 Pulses;
+
+    [ Description("This indicates, whether a PC's speaker should beep
+    when an alarm occurs."),
+      Write ]
+    boolean Beep;
+
+     [ Description("ALARM warning indicating, that current speed is out of
+     range. This information is supplied by fan's chip driver.") ]
+    boolean Alarm;
+
+     [ Description("ALARM warning indicating, that current speed is below
+       the critical level. This information is supplied by fan's chip driver.")
+     ]
+    boolean MinAlarm;
+
+     [ Description("ALARM warning indicating, that current speed is above
+       the critical level. This information is supplied by fan's chip driver.")
+     ]
+    boolean MaxAlarm;
+
+};
+
+// ===================================================================
+// 	Linux_FanSensor
+// ===================================================================
+[ Provider("cmpi:cmpiLinux_FanSensorProvider") ]
+class Linux_FanSensor : CIM_NumericSensor {
+
+     [ Key, Override("DeviceID"),
+       Description("Uniquely identifies fan. It is a composition of
+       SysPath and Name glued with slash ('/').") ]
+     string DeviceId;
+
+     [ Key, Override("Name"),
+       Description("Name of fan provided by system.") ]
+    string Name;
+
+};
+
+
+// ===================================================================
+// 	Associations
+// ===================================================================
+[ Association,
+  Provider("cmpi:cmpiLinux_FanAssociatedSensorProvider") ]
+class Linux_FanAssociatedSensor : CIM_AssociatedSensor {
+
+    [ Override("Antecedent") ]
+    Linux_FanSensor REF Antecedent;
+
+    [ Override("Dependent") ]
+    Linux_Fan REF Dependent;
+
+};
