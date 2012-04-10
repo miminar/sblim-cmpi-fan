@@ -23,7 +23,6 @@
 #include <sblim/cmpiOSBase_Common.h>
 
 #include "cmpiLinux_FanCommon.h"
-#include "Linux_FanUtil.h"
 
 #define UNUSED(x) ((void) (x))
 

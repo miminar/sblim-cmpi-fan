@@ -31,7 +31,6 @@
 #include <sblim/cmpiOSBase_Common.h>
 
 #include "cmpiLinux_FanSensor.h"
-#include "Linux_FanUtil.h"
 
 #define UNUSED(x) ((void) (x))
 static const CMPIBroker * _broker;
@@ -54,7 +53,6 @@ CMPIStatus Linux_FanSensorProviderCleanup(
 
     _OSBASE_TRACE(1,("--- %s CMPI Cleanup() called",_ClassName));
     cleanup_linux_fan_module();
-    util_cleanup();
     _OSBASE_TRACE(1,("--- %s CMPI Cleanup() exited",_ClassName));
     CMReturn(CMPI_RC_OK);
 }

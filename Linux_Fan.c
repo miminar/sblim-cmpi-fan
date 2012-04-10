@@ -28,7 +28,6 @@
 #include <sensors/error.h>
 
 #include "Linux_Fan.h"
-#include "Linux_FanUtil.h"
 
 #define MAX_CHIP_NAME_LENGTH 200
 
@@ -177,7 +176,6 @@ static unsigned int _load_accessible_features(
     unsigned int i = 1;
     int sf_type;
 
-    log_msg("_load_accessible_features enter");
     while(i <= CIM_FAN_AF_FEATURE_MAX) {
         switch (i) {
             case CIM_FAN_AF_MIN_SPEED:
@@ -213,7 +211,6 @@ static unsigned int _load_accessible_features(
         }
         i = i << 1;
     }
-    log_msg("_load_accessible_features exit");
     return res;
 }
 

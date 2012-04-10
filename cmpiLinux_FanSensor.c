@@ -23,7 +23,6 @@
 #include <sblim/cmpiOSBase_Common.h>
 
 #include "cmpiLinux_FanSensor.h"
-#include "Linux_FanUtil.h"
 
 static CMPIArray * _get_PossibleStates(
 	CMPIBroker const *_broker,

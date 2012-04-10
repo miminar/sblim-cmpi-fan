@@ -12,7 +12,7 @@ libcmpiLinux_FanAssociatedSensorProvider.so: \
 	$(CC) -shared -Wl -o $@ $^ -lcmpiOSBase_Common
 
 libcmpi%Provider.so: cmpi%Provider.o cmpi%.o \
-    cmpiLinux_FanCommon.o Linux_Fan.o Linux_FanUtil.o
+    cmpiLinux_FanCommon.o Linux_Fan.o
 	$(CC) -shared -Wl -o $@ $^ -lcmpiOSBase_Common -lsensors
 
 %.o: %.c
