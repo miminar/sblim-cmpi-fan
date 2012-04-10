@@ -1,3 +1,19 @@
+/* This file is part of cmpiLinux_FanProvider.
+ *
+ * cmpiLinux_FanProvider is free software: you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * cmpiLinux_FanProvider is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with cmpiLinux_FanProvider. If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
 #include <stdio.h>
 #include <string.h>
 #include <stdint.h>
@@ -59,7 +75,8 @@ CMPIStatus Linux_FanAssociatedSensorProviderEnumInstanceNames(
 				   1,0,&rc);
   if( refrc != 0 ) { 
     if( rc.msg != NULL ) {
-      _OSBASE_TRACE(1,("--- %s CMPI EnumInstanceNames() failed : %s",_ClassName,CMGetCharPtr(rc.msg)));
+      _OSBASE_TRACE(1, ("--- %s CMPI EnumInstanceNames() failed : %s",
+                  _ClassName,CMGetCharPtr(rc.msg)));
     }
     else {
       _OSBASE_TRACE(1,("--- %s CMPI EnumInstanceNames() failed",_ClassName));
@@ -91,7 +108,8 @@ CMPIStatus Linux_FanAssociatedSensorProviderEnumInstances(
 				   1,1,&rc);
   if( refrc != 0 ) { 
     if( rc.msg != NULL ) {
-      _OSBASE_TRACE(1,("--- %s CMPI EnumInstances() failed : %s",_ClassName,CMGetCharPtr(rc.msg)));
+      _OSBASE_TRACE(1, ("--- %s CMPI EnumInstances() failed : %s",
+                  _ClassName,CMGetCharPtr(rc.msg)));
     }
     else {
       _OSBASE_TRACE(1,("--- %s CMPI EnumInstances() failed",_ClassName));
@@ -121,7 +139,8 @@ CMPIStatus Linux_FanAssociatedSensorProviderGetInstance(
 
   if( ci == NULL ) { 
     if( rc.msg != NULL ) {
-      _OSBASE_TRACE(1,("--- %s CMPI GetInstance() failed : %s",_ClassName,CMGetCharPtr(rc.msg)));
+      _OSBASE_TRACE(1, ("--- %s CMPI GetInstance() failed : %s",
+                  _ClassName,CMGetCharPtr(rc.msg)));
     }
     else {
       _OSBASE_TRACE(1,("--- %s CMPI GetInstance() failed",_ClassName));
@@ -308,13 +327,16 @@ CMPIStatus Linux_FanAssociatedSensorProviderAssociators(
 			  _ClassName, &rc );
     if( op==NULL ) {
       CMSetStatusWithChars( _broker, &rc,
-			    CMPI_RC_ERR_FAILED, "Create CMPIObjectPath failed." );
-      _OSBASE_TRACE(2,("--- %s CMPI Associators() failed : %s",CMGetCharPtr(rc.msg)));
+            CMPI_RC_ERR_FAILED, "Create CMPIObjectPath failed." );
+      _OSBASE_TRACE(2,
+              ("--- %s CMPI Associators() failed : %s",CMGetCharPtr(rc.msg)));
       return rc;
     }
   }
 
-  if( ( assocClass==NULL ) || ( CMClassPathIsA(_broker,op,assocClass,&rc) == 1 ) ) {
+  if (  (assocClass == NULL)
+     || (CMClassPathIsA(_broker,op,assocClass,&rc) == 1))
+  {
   
     if( _assoc_check_parameter_const( _broker,cop,_RefLeft,_RefRight,
 				      _RefLeftClass,_RefRightClass,
@@ -327,7 +349,8 @@ CMPIStatus Linux_FanAssociatedSensorProviderAssociators(
 				    1, 1, &rc);
     if( refrc != 0 ) {
       if( rc.msg != NULL ) {
-	_OSBASE_TRACE(1,("--- %s CMPI Associators() failed : %s",_ClassName,CMGetCharPtr(rc.msg)));
+	_OSBASE_TRACE(1, ("--- %s CMPI Associators() failed : %s",
+                    _ClassName,CMGetCharPtr(rc.msg)));
       }
       else {
 	_OSBASE_TRACE(1,("--- %s CMPI Associators() failed",_ClassName));
@@ -365,7 +388,8 @@ CMPIStatus Linux_FanAssociatedSensorProviderAssociatorNames(
     if( op==NULL ) {
       CMSetStatusWithChars( _broker, &rc,
 			    CMPI_RC_ERR_FAILED, "Create CMPIObjectPath failed." );
-      _OSBASE_TRACE(2,("--- %s CMPI AssociatorNames() failed : %s",CMGetCharPtr(rc.msg)));
+      _OSBASE_TRACE(2, ("--- %s CMPI AssociatorNames() failed : %s",
+                  CMGetCharPtr(rc.msg)));
       return rc;
     }
   }
@@ -383,7 +407,8 @@ CMPIStatus Linux_FanAssociatedSensorProviderAssociatorNames(
 				    0, 1, &rc);
     if( refrc != 0 ) { 
       if( rc.msg != NULL ) {
-	_OSBASE_TRACE(1,("--- %s CMPI AssociatorNames() failed : %s",_ClassName,CMGetCharPtr(rc.msg)));
+	_OSBASE_TRACE(1, ("--- %s CMPI AssociatorNames() failed : %s",
+                    _ClassName,CMGetCharPtr(rc.msg)));
       }
       else {
 	_OSBASE_TRACE(1,("--- %s CMPI AssociatorNames() failed",_ClassName));
@@ -447,7 +472,8 @@ CMPIStatus Linux_FanAssociatedSensorProviderReferences(
 				    1, 0, &rc);
     if( refrc != 0 ) { 
       if( rc.msg != NULL ) {
-	_OSBASE_TRACE(1,("--- %s CMPI References() failed : %s",_ClassName,CMGetCharPtr(rc.msg)));
+	_OSBASE_TRACE(1, ("--- %s CMPI References() failed : %s",
+                    _ClassName,CMGetCharPtr(rc.msg)));
       }
       else {
 	_OSBASE_TRACE(1,("--- %s CMPI References() failed",_ClassName));
