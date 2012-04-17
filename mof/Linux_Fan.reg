@@ -1,7 +1,7 @@
 [Linux_Fan]
     provider: Linux_FanProvider
     location: cmpiLinux_FanProvider
-    type: instance
+    type: instance method
     namespace: root/cimv2
 
 [Linux_FanSensor]

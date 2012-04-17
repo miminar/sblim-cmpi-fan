@@ -17,7 +17,7 @@ class Linux_Fan : CIM_Fan {
        SysPath and Name glued with slash ('/').") ]
      string DeviceId;
 
-     [ Key, Override("Name"),
+     [ Override("Name"),
        Description("Name of fan provided by system.") ]
     string Name;
 

@@ -15,7 +15,6 @@
  * <http://www.gnu.org/licenses/>.
  */
 #include <stdlib.h>
-#include <stdio.h>
 #include <string.h>
 #include <stdint.h>
 #include <limits.h>
@@ -169,6 +168,14 @@ CMPIStatus Linux_FanProviderGetInstance( CMPIInstanceMI * mi,
 
     _OSBASE_TRACE(1,("--- %s CMPI GetInstance() called",_ClassName));
 
+    _check_system_key_value_pairs(_broker, cop, "SystemCreationClassName",
+            "SystemName", &rc);
+    if (rc.rc != CMPI_RC_OK) {
+        _OSBASE_TRACE(1, ("--- %s CMPI GetInstance() failed : %s",
+                _ClassName, CMGetCharPtr(rc.msg)));
+        return rc;
+    }
+
     data = CMGetKey(cop, "OtherIdentifyingInfo", &rc);
     if (  !rc.rc
        && data.type == CMPI_stringA
@@ -260,6 +267,21 @@ CMPIStatus Linux_FanProviderSetInstance( CMPIInstanceMI * mi,
 
     _OSBASE_TRACE(1, ("--- %s CMPI SetInstance() called", _ClassName));
     
+    _check_system_key_value_pairs(_broker, cop, "SystemCreationClassName",
+            "SystemName", &rc);
+    if (rc.rc != CMPI_RC_OK) {
+        _OSBASE_TRACE(1, ("--- %s CMPI SetInstance() failed : %s",
+                _ClassName, CMGetCharPtr(rc.msg)));
+        return rc;
+    }
+    _check_system_key_value_pairs(_broker, cop, "OSCreationClassName",
+            "OSName", &rc);
+    if (rc.rc != CMPI_RC_OK) {
+        _OSBASE_TRACE(1, ("--- %s CMPI SetInstance() failed : %s",
+                _ClassName, CMGetCharPtr(rc.msg)));
+        return rc;
+    }
+
     data = CMGetKey(cop, "DeviceID", &rc);
     if (data.value.string == NULL) {
         CMSetStatusWithChars(_broker, &rc,
@@ -389,9 +411,10 @@ CMPIStatus Linux_FanProviderInvokeMethod( CMPIMethodMI * mi,
            CMPIArgs * out) {
     UNUSED(mi); UNUSED(ctx); UNUSED(in); UNUSED(out);
 
-    CMPIString     * sys_path;
-    CMPIString     * fan_name;
+    struct cim_fan * sptr  = NULL;
+    CMPIString     * device_id = NULL;
     CMPIValue        valrc;
+    CMPIData         data;
     CMPIString     * class = NULL;
     CMPIStatus       rc    = {CMPI_RC_OK, NULL};
 
@@ -402,28 +425,35 @@ CMPIStatus Linux_FanProviderInvokeMethod( CMPIMethodMI * mi,
     /* "terminate" */
     if (  strcasecmp(CMGetCharPtr(class), _ClassName) == 0
        && strcasecmp(methodName, "setspeed") == 0 ) {
-
-        valrc.uint32 = 0;
-
-        sys_path = CMGetKey(ref, "SysPath", &rc).value.string;
-        fan_name = CMGetKey(ref, "Name", &rc).value.string;
-
-        if (!sys_path || !fan_name) {
+        if (!(device_id = CMGetKey(ref, "DeviceID", &rc).value.string)) {
             CMSetStatusWithChars(_broker, &rc,
-                    CMPI_RC_ERR_FAILED, "No such fan found!");
+                    CMPI_RC_ERR_FAILED, "Could not get fan ID." );
+            _OSBASE_TRACE(1, ("--- %s CMPI InvokeMethod() failed : %s",
+                    _ClassName, CMGetCharPtr(rc.msg)));
+        }else if (get_fan_data_by_id(CMGetCharPtr(device_id), &sptr) || !sptr) {
+            CMSetStatusWithChars(_broker, &rc,
+                    CMPI_RC_ERR_NOT_FOUND, "No such Fan found.");
             _OSBASE_TRACE(1, ("--- %s CMPI InvokeMethod() failed : %s",
                     _ClassName, CMGetCharPtr(rc.msg)));
         }else {
-            _OSBASE_TRACE(1, ("--- %s CMPI InvokeMethod() failed : TODO",
-                        _ClassName));
+            data = CMGetArg(in, "DesiredSpeed", &rc);
+            if (data.type != CMPI_uint64 || data.state != CMPI_goodValue) {
+                CMSetStatusWithChars(_broker, &rc,
+                        CMPI_RC_ERR_FAILED, "Missing argument: DesiredSpeed");
+                _OSBASE_TRACE(1, ("--- %s CMPI InvokeMethod() failed : %s",
+                        _ClassName, CMGetCharPtr(rc.msg)));
+            }else {
+                valrc.uint32 = 1; // not supported
+
+                CMReturnData(rslt, &valrc, CMPI_uint32);
+                _OSBASE_TRACE(1, ("--- %s CMPI InvokeMethod() %s exited",
+                            _ClassName, methodName));
+                CMReturnDone(rslt);
+            }
         }
-        CMReturnData(rslt, &valrc, CMPI_uint32);
-        _OSBASE_TRACE(1, ("--- %s CMPI InvokeMethod() %s exited",
-                    _ClassName, methodName));
-        CMReturnDone(rslt);
     }else {
         CMSetStatusWithChars(_broker, &rc,
-                CMPI_RC_ERR_NOT_FOUND, methodName);
+                CMPI_RC_ERR_METHOD_NOT_AVAILABLE, methodName);
     }
 
     _OSBASE_TRACE(1, ("--- %s CMPI InvokeMethod() exited", _ClassName));

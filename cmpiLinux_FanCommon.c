@@ -143,7 +143,6 @@ CMPIObjectPath * _makePath_FanCommon(
                 CMPI_chars);
         CMAddKey(op, "SystemName", get_system_name(), CMPI_chars);
         CMAddKey(op, "DeviceID", sptr->device_id, CMPI_chars);
-	CMAddKey(op, "Name", sptr->name, CMPI_chars);
     }
     _OSBASE_TRACE(2, ("--- _makePath_FanCommon() exited"));
     return op;
@@ -168,8 +167,7 @@ CMPIInstance * _makeInst_FanCommon(
 	"CreationClassName",
 	"SystemCreationClassName",
 	"SystemName",
-	"DeviceId",
-	"Name",
+	"DeviceID",
 	NULL
     };
     char buf[200];
@@ -220,7 +218,6 @@ CMPIInstance * _makeInst_FanCommon(
 	    CMPI_chars);
     CMSetProperty(ci, "SystemName", get_system_name(), CMPI_chars);
     CMSetProperty(ci, "DeviceID", sptr->device_id, CMPI_chars);
-    CMSetProperty(ci, "Name", sptr->name, CMPI_chars);
 
     // other properties *******************************************************
     // ManagedElement
@@ -231,6 +228,7 @@ CMPIInstance * _makeInst_FanCommon(
     CMSetProperty(ci, "ElementName", buf, CMPI_chars);
 
     // ManagedSystemElement
+    CMSetProperty(ci, "Name", sptr->name, CMPI_chars);
     val.array = _get_OperationalStatus(_broker, rc, sptr);
     CMSetProperty(ci, "OperationalStatus", &val, CMPI_uint16A);
     val.array = _get_StatusDescriptions(_broker, rc, sptr);
