@@ -22,6 +22,7 @@
 #include <sys/wait.h>
 #include <unistd.h>
 #include <strings.h>
+#include <errno.h>
 
 #include <cmpi/cmpidt.h>
 #include <cmpi/cmpift.h>
@@ -38,9 +39,27 @@ static const CMPIBroker * _broker;
     #define Linux_FanProviderSetInstance Linux_FanProviderModifyInstance
 #endif
 
+// utilities ******************************************************************
+static bool data_2_uint64_t(CMPIData const * data, uint64_t *res) {
+    if (data->state != CMPI_goodValue) return false;
+    switch (data->type) {
+        case CMPI_string:
+           errno = 0;
+           *res = strtoull(CMGetCharPtr(data->value.string), NULL, 10);
+           if (errno) return false;
+           break;
+        case CMPI_sint32: *res = (uint64_t) data->value.sint32; break;
+        case CMPI_uint32: *res = (uint64_t) data->value.uint32; break;
+        case CMPI_sint64: *res = (uint64_t) data->value.sint64; break;
+        default: return false;
+    }
+    return true;
+}
+
 /* ---------------------------------------------------------------------------*/
 /*                      Instance Provider Interface                           */
 /* ---------------------------------------------------------------------------*/
+
 
 CMPIStatus Linux_FanProviderCleanup( CMPIInstanceMI * mi,
            const CMPIContext * ctx, CMPIBoolean terminate) {
@@ -274,13 +293,6 @@ CMPIStatus Linux_FanProviderSetInstance( CMPIInstanceMI * mi,
                 _ClassName, CMGetCharPtr(rc.msg)));
         return rc;
     }
-    _check_system_key_value_pairs(_broker, cop, "OSCreationClassName",
-            "OSName", &rc);
-    if (rc.rc != CMPI_RC_OK) {
-        _OSBASE_TRACE(1, ("--- %s CMPI SetInstance() failed : %s",
-                _ClassName, CMGetCharPtr(rc.msg)));
-        return rc;
-    }
 
     data = CMGetKey(cop, "DeviceID", &rc);
     if (data.value.string == NULL) {
@@ -417,12 +429,12 @@ CMPIStatus Linux_FanProviderInvokeMethod( CMPIMethodMI * mi,
     CMPIData         data;
     CMPIString     * class = NULL;
     CMPIStatus       rc    = {CMPI_RC_OK, NULL};
+    uint64_t         desired_speed;
 
     _OSBASE_TRACE(1, ("--- %s CMPI InvokeMethod() called", _ClassName));
 
     class = CMGetClassName(ref, &rc);
 
-    /* "terminate" */
     if (  strcasecmp(CMGetCharPtr(class), _ClassName) == 0
        && strcasecmp(methodName, "setspeed") == 0 ) {
         if (!(device_id = CMGetKey(ref, "DeviceID", &rc).value.string)) {
@@ -436,19 +448,25 @@ CMPIStatus Linux_FanProviderInvokeMethod( CMPIMethodMI * mi,
             _OSBASE_TRACE(1, ("--- %s CMPI InvokeMethod() failed : %s",
                     _ClassName, CMGetCharPtr(rc.msg)));
         }else {
+            char errbuf[100];
+            char const * errdscr;
             data = CMGetArg(in, "DesiredSpeed", &rc);
-            if (data.type != CMPI_uint64 || data.state != CMPI_goodValue) {
+            if (data.state != CMPI_goodValue) {
+                switch (data.state) {
+                    case CMPI_nullValue: errdscr = "null value"; break;
+                    case CMPI_badValue:  errdscr = "bad value"; break;
+                    case CMPI_notFound:  errdscr = "not found"; break;
+                    default: errdscr = "unknown error";
+                }
+                snprintf(errbuf, 100, "Argument error: DesiredSpeed - %s", errdscr);
                 CMSetStatusWithChars(_broker, &rc,
-                        CMPI_RC_ERR_FAILED, "Missing argument: DesiredSpeed");
-                _OSBASE_TRACE(1, ("--- %s CMPI InvokeMethod() failed : %s",
-                        _ClassName, CMGetCharPtr(rc.msg)));
+                        CMPI_RC_ERR_FAILED, errbuf);
+            }else if (!data_2_uint64_t(&data, &desired_speed)) {
+                CMSetStatusWithChars(_broker, &rc, CMPI_RC_ERR_FAILED,
+                        "Argument error: DesiredSpeed must be of type uint64");
             }else {
-                valrc.uint32 = 1; // not supported
-
-                CMReturnData(rslt, &valrc, CMPI_uint32);
-                _OSBASE_TRACE(1, ("--- %s CMPI InvokeMethod() %s exited",
-                            _ClassName, methodName));
-                CMReturnDone(rslt);
+                CMSetStatusWithChars(_broker, &rc,
+                                CMPI_RC_ERR_NOT_SUPPORTED, "CIM_ERR_NOT_SUPPORTED");
             }
         }
     }else {
