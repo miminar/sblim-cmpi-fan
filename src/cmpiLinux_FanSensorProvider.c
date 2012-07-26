@@ -319,7 +319,7 @@ CMPIStatus Linux_FanSensorProviderExecQuery(
 CMInstanceMIStub( Linux_FanSensorProvider,
                   Linux_FanSensorProvider,
                   _broker,
-                  init_linux_fan_module());
+                  init_linux_fan_module())
 
 /* ---------------------------------------------------------------------------*/
 /*                 end of cmpiLinux_FanSensorProvider                      */

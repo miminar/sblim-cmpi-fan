@@ -485,12 +485,12 @@ CMPIStatus Linux_FanProviderInvokeMethod( CMPIMethodMI * mi,
 CMInstanceMIStub( Linux_FanProvider,
                   Linux_FanProvider,
                   _broker,
-                  init_linux_fan_module());
+                  init_linux_fan_module())
 
 CMMethodMIStub( Linux_FanProvider,
                 Linux_FanProvider,
                 _broker,
-                init_linux_fan_module());
+                init_linux_fan_module())
 
 /* ---------------------------------------------------------------------------*/
 /*                 end of cmpiLinux_FanProvider                      */

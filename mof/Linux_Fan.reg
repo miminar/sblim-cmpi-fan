@@ -1,18 +1,18 @@
 [Linux_Fan]
     provider: Linux_FanProvider
-    location: cmpiLinux_FanProvider
+    location: cmpiLinux_Fan
     type: instance method
     namespace: root/cimv2
 
 [Linux_FanSensor]
     provider: Linux_FanSensorProvider
-    location: cmpiLinux_FanSensorProvider
+    location: cmpiLinux_Fan
     type: instance
     namespace: root/cimv2
 
 [Linux_FanAssociatedSensor]
     provider: Linux_FanAssociatedSensorProvider
-    location: cmpiLinux_FanAssociatedSensorProvider
+    location: cmpiLinux_Fan
     type: instance association
     namespace: root/cimv2
 

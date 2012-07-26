@@ -548,12 +548,12 @@ CMPIStatus Linux_FanAssociatedSensorProviderReferenceNames(
 CMInstanceMIStub( Linux_FanAssociatedSensorProvider,
                   Linux_FanAssociatedSensorProvider,
                   _broker,
-                  CMNoHook);
+                  CMNoHook)
 
 CMAssociationMIStub( Linux_FanAssociatedSensorProvider, 
                      Linux_FanAssociatedSensorProvider, 
                      _broker, 
-                     CMNoHook);
+                     CMNoHook)
 
 /* ---------------------------------------------------------------------------*/
 /*                 end of cmpiLinux_FanAssociatedSensorProvider               */
