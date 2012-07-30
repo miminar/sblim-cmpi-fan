@@ -19,9 +19,13 @@ foreach(CLASS ${CIM_CLASSES})
 endforeach(CLASS ${CIM_CLASSES})
 
 add_library(cmpiLinux_Fan SHARED
-    cmpiLinux_FanCommon.c
+    Linux_Fan.h
+    Linux_Fan.c
     cmpiLinux_Fan.h
     cmpiLinux_Fan.c
+    cmpiLinux_FanCommon.h
+    cmpiLinux_FanCommon.c
+    cmpiLinux_FanSensor.h
     cmpiLinux_FanSensor.c
     ${CIM_PROVIDERS}
     ${CIM_HEADERS}
